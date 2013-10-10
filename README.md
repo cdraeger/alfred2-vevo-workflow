@@ -4,6 +4,10 @@ Search vevo.com for videos in Alfred and watch them in your browser.
 
 ![](https://raw.github.com/cdraeger/alfred2-vevo-workflow/master/screenshots/results.png)
 
+##Download
+
+For an easy installation, you can download the exported workflow here: [vevo.alfredworkflow](export/vevo.alfredworkflow)
+
 ##Usage
 
 ###Keyword: `vevo`
