@@ -1,4 +1,4 @@
-#Alfred 2 VEVO.com Quicksearch Worklow
+#Alfred 2 VEVO.com Quicksearch Workflow
 
 Search vevo.com for videos in Alfred and watch them in your browser.
 
