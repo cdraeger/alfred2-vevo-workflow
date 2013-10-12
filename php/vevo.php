@@ -5,7 +5,7 @@
  * by the VEVO.com Workflow for Alfred 2.
  *
  * @author   Carsten Draeger <carsten@draegerit.de> (@blacklight24)
- * @version  0.2
+ * @version  1.0
  */
 class Vevo {
 
@@ -14,8 +14,14 @@ class Vevo {
 	const ICON_PREMIERE = 'icons/icon_premiere.png';
 	const ICON_EXPLICIT_PREMIERE = 'icons/icon_explicit_premiere.png';
 
-	const API_URL_SEARCH_VIDEO = "http://api.vevo.com/mobile/v1/search/videos.json?q=";
-	const URL_APPENDIX_ORDER_SEARCH_VIDEO = "MostViewedAllTime";
+	const API_URL_BASE = "http://api.vevo.com/mobile/v1/";
+	
+	const URL_APPENDIX_ORDER_MOST_VIEWED_ALL_TIME = "MostViewedAllTime";
+	const URL_APPENDIX_ORDER_MOST_VIEWED_THIS_MONTH = "MostViewedThisMonth";
+	const URL_APPENDIX_ORDER_MOST_VIEWED_THIS_WEEK = "MostViewedThisWeek";
+	const URL_APPENDIX_ORDER_MOST_VIEWED_TODAY = "MostViewedToday";
+	const URL_APPENDIX_ORDER_MOST_RECENT = "MostRecent";
+	const URL_APPENDIX_ORDER_RANDOM = "Random"; //not working.. currently?
 
 	const VEVO_URL_BASE = "http://www.vevo.com/";
 	const VEVO_URL_APPENDIX_VIDEO_WATCH = "watch/";
@@ -28,6 +34,7 @@ class Vevo {
 	private $wf;
 	private $query;
 
+	private $video_sort_order;
 	private $title_sep;
 	private $subtitle_sep;
 
@@ -36,23 +43,26 @@ class Vevo {
 		$this->wf = new Workflows();
 		
 		$this->query = $query;
+		$this->video_sort_order = self::URL_APPENDIX_ORDER_MOST_VIEWED_ALL_TIME;
 		$this->title_sep = json_decode(self::UNICODE_STAR_1);
 		$this->subtitle_sep = json_decode(self::UNICODE_BULLET);
 	}
 
 	public function getJsonObject() {
-		if ( is_null( $this->query ) ):
-			return false;
+		if ( empty( $this->query ) ):
+			$apiurl = self::API_URL_BASE . "video/list.json?";
+			$apiurl .= "ispremiere=true"; // list of video premieres when query is empty
 		else:
 			$term = trim(strtolower($this->query));
 			$search = str_replace(array(" "), array("+"), $term);
 			
-			$apiurl = self::API_URL_SEARCH_VIDEO . $search;
-			$apiurl .= "&order=" . self::URL_APPENDIX_ORDER_SEARCH_VIDEO;
-
-			$json = $this->wf->request($apiurl);
-			return json_decode($json, true);
+			$apiurl = self::API_URL_BASE . "search/";
+			$apiurl .= "videos.json?q=" . $search;
+			$apiurl .= "&order=" . $this->video_sort_order;
 		endif;
+
+		$json = $this->wf->request($apiurl);
+		return json_decode($json, true);
 	}
 
 	public function parseJsonVideoSearchResults( $obj = null ) {
@@ -75,11 +85,11 @@ class Vevo {
 					$image_url = $video['image_url'];
 
 					$artists_main = null;
-					$artist_main_url_safename = null;
+					$artist_url_safename = null;
 					$count_artists_main = 1;
 					foreach ($artists_main_arr as $artist) {
 						if ($count_artists_main == 1) {
-							$artist_main_url_safename = $artist['url_safename'];
+							$artist_url_safename = $artist['url_safename'];
 							$artists_main = $artist['name'];
 						} else {
 							$artists_main = $artists_main . " / " . $artist['name'];
@@ -91,6 +101,10 @@ class Vevo {
 					$artists_featured = null;
 					$count_artists_featured = 1;
 					foreach ($artists_ft_arr as $artist_ft) {
+						if (empty($artist_url_safename)) { // in case only featured artist(s) are available
+							$artist_url_safename = $artist_ft['url_safename'];
+						}
+
 						if ($count_artists_featured == 1) {
 							$artists_featured = $artist_ft['name'];
 						} else {
@@ -105,19 +119,26 @@ class Vevo {
 						$item_title = $item_title . " ft. " . $artists_featured;
 					}
 
-					$length = $this->getFormattedLength($duration_in_seconds);
-					if ($length) {
+					$item_subtitle = null;					
+					if (!empty($duration_in_seconds)) {
+						$length = $this->getFormattedLength($duration_in_seconds);
 						$item_subtitle = "Length: " . $length;
 						$item_subtitle .= " " . $this->subtitle_sep . " ";
 					}
 
-					$item_subtitle .= "Views: " . number_format($viewcount, 0, ',', '.');
+					if (!empty($viewcount)) {
+						$item_subtitle .= "Views: " . number_format($viewcount, 0, ',', '.');
+					}
+
+					if (empty($item_subtitle)) {
+						$item_subtitle = "Hit enter to watch this video in your browser.";
+					}
 
 					if (!$explicit && !$premiere) {
 						$icon = self::ICON_DEFAULT;
-					} elseif ($explicit) {
+					} elseif ($explicit && !$premiere) {
 						$icon = self::ICON_EXPLICIT;
-					} elseif ($premiere) {
+					} elseif ($premiere && !explicit) {
 						$icon = self::ICON_PREMIERE;
 					} else {
 						$icon = self::ICON_EXPLICIT_PREMIERE;
@@ -125,7 +146,7 @@ class Vevo {
 
 					$url  = self::VEVO_URL_BASE;
 					$url .= self::VEVO_URL_APPENDIX_VIDEO_WATCH;
-					$url .= $artist_main_url_safename."/".$url_safe_title."/".$isrc;
+					$url .= $artist_url_safename."/".$url_safe_title."/".$isrc;
 					$url .= "?source=instantsearch"; // 'instantsearch' as search-parameter, because that's what it is
 					
 					$this->wf->result($this->wf->bundle().'.'.$count.'.'.time(), $url, $item_title, $item_subtitle, $icon);
@@ -140,7 +161,7 @@ class Vevo {
 	}
 
 	private function getFormattedLength( $duration_in_seconds = null ) {
-		if ( is_null( $duration_in_seconds ) ):
+		if ( empty( $duration_in_seconds ) ):
 			return false;
 		else:
 			$minutes = floor($duration_in_seconds / 60);

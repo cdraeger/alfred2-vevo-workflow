@@ -40,7 +40,7 @@
 			<key>config</key>
 			<dict>
 				<key>argumenttype</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>keyword</key>
@@ -56,7 +56,7 @@ $vevo-&gt;parseJsonVideoSearchResults($obj);
 
 echo $vevo-&gt;getXml();</string>
 				<key>subtext</key>
-				<string>Find a music video on vevo.com</string>
+				<string>Find music videos on vevo.com (no arguments will result in a list of current video premieres).</string>
 				<key>title</key>
 				<string>Search VEVO.com</string>
 				<key>type</key>
