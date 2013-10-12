@@ -12,7 +12,9 @@ For an easy installation, you can download the exported workflow here: [vevo.alf
 
 ###Keyword: `vevo`
 
-Type `vevo` followed by a space and your search-term in the Alfred 2 Launcher to see a list of videos matching your query. Hit `↵ Enter` to open the vevo.com website. You will directly be taken to the video and it will play immediately.
+No arguments will result in a list of current video premieres.
+
+Type `vevo` followed by a space and your search-term to see a list of videos matching your query. Hit `↵ Enter` to open the vevo.com website. You will directly be taken to the video and it will play immediately.
 
 You can also hold the `⌥`-key  while pressing enter. This will copy the URL of the video to the clipboard.
 
@@ -28,6 +30,15 @@ You will see the following Information about the videos in the launcher:
 - Viewcount
 
 You will also see if the video is explicit, a premiere or both (indicated by different icons).
+
+##Changelog
+
+####v1.1
+- Arguments are now optional. If you don't enter any search term you will see a list of current video premieres.
+- Some refactoring and bug fixes.
+
+####v1.0
+Initial release
 
 ##Screenshots:
 
