@@ -138,7 +138,7 @@ class Vevo {
 						$icon = self::ICON_DEFAULT;
 					} elseif ($explicit && !$premiere) {
 						$icon = self::ICON_EXPLICIT;
-					} elseif ($premiere && !explicit) {
+					} elseif ($premiere && !$explicit) {
 						$icon = self::ICON_PREMIERE;
 					} else {
 						$icon = self::ICON_EXPLICIT_PREMIERE;
