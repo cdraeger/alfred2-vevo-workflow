@@ -6,7 +6,7 @@ Search vevo.com for videos in Alfred and watch them in your browser.
 
 ##Download
 
-For an easy installation, you can download the exported workflow here: [vevo.alfredworkflow](export/vevo.alfredworkflow)
+For an easy installation, you can download the exported workflow here: [vevo.alfredworkflow](export/vevo.alfredworkflow?raw=true)
 
 ##Usage
 
