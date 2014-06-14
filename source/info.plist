@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>vevoquicksearch</string>
+	<string>de.draegerit.alfred.vevo</string>
+	<key>category</key>
+	<string>Internet</string>
 	<key>connections</key>
 	<dict>
 		<key>710EE523-2AE0-47A8-BCEA-790E5CCDBACE</key>
@@ -33,7 +35,7 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>VEVO.com</string>
+	<string>VEVO.com Quicksearch</string>
 	<key>objects</key>
 	<array>
 		<dict>
